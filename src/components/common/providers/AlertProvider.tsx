@@ -1,5 +1,12 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+
+import { useCallback } from "react";
+import {
+  type AlertConfig,
+  type ConfirmConfig,
+  useAlertActions,
+  useAlertStore,
+} from "@/stores/alertStore";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,97 +17,66 @@ import {
   AlertDialogTitle,
 } from "../../ui/alert-dialog";
 
-interface AlertBaseConfig {
-  title: string;
-  description: string;
-  onConfirm: () => void;
-  confirmButtonText?: string;
-}
+const AlertRoot = () => {
+  const config = useAlertStore((state) => state.config);
+  const isOpen = useAlertStore((state) => state.isOpen);
+  const hide = useAlertStore((state) => state.hide);
+  const clear = useAlertStore((state) => state.clear);
 
-type AlertConfig = AlertBaseConfig & {
-  type?: "alert";
-};
-
-type ConfirmConfig = AlertBaseConfig & {
-  type?: "confirm";
-  onCancel?: () => void;
-  cancelButtonText?: string;
-};
-
-type AlertStateConfig = AlertBaseConfig & {
-  type: "alert" | "confirm";
-  onCancel?: () => void;
-  cancelButtonText?: string;
-};
-
-const AlertContext = createContext<
-  | {
-      alert: (config: AlertConfig) => void;
-      confirm: (config: ConfirmConfig) => void;
-      hideAlert: () => void;
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      hide();
     }
-  | undefined
->(undefined);
-
-const AlertProvider = ({ children }: { children: React.ReactNode }) => {
-  const [alertConfig, setAlertConfig] = useState<AlertStateConfig | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const alert = (config: AlertConfig) => {
-    setAlertConfig({
-      ...config,
-      type: "alert",
-    });
-    setIsOpen(true);
   };
 
-  const confirm = (config: ConfirmConfig) => {
-    setAlertConfig({
-      confirmButtonText: "확인",
-      cancelButtonText: "취소",
-      type: "confirm",
-      ...config,
-    });
-    setIsOpen(true);
-  };
+  const handleExitAnimation = useCallback(
+    (
+      event:
+        | React.AnimationEvent<HTMLDivElement>
+        | React.TransitionEvent<HTMLDivElement>
+    ) => {
+      if (event.currentTarget.getAttribute("data-state") === "closed") {
+        clear();
+      }
+    },
+    [clear]
+  );
 
-  const hideAlert = () => {
-    setIsOpen(false);
-  };
+  if (!config) {
+    return null;
+  }
 
-  useEffect(() => {
-    setTimeout(() => {
-      isOpen || setAlertConfig(null);
-    }, 200);
-  }, [isOpen]);
   return (
-    <AlertContext.Provider value={{ alert, confirm, hideAlert }}>
-      {children}
-      <AlertDialog open={isOpen} onOpenChange={hideAlert}>
-        <AlertDialogContent>
-          <AlertDialogTitle>{alertConfig?.title}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {alertConfig?.description}
-          </AlertDialogDescription>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={alertConfig?.onCancel}>
-              {alertConfig?.cancelButtonText}
+    <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
+      <AlertDialogContent
+        onAnimationEnd={handleExitAnimation}
+        onTransitionEnd={handleExitAnimation}
+      >
+        <AlertDialogTitle>{config.title}</AlertDialogTitle>
+        <AlertDialogDescription>{config.description}</AlertDialogDescription>
+        <AlertDialogFooter>
+          {config.type === "confirm" ? (
+            <AlertDialogCancel onClick={config.onCancel}>
+              {config.cancelButtonText}
             </AlertDialogCancel>
-            <AlertDialogAction onClick={alertConfig?.onConfirm}>
-              {alertConfig?.confirmButtonText}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </AlertContext.Provider>
+          ) : null}
+          <AlertDialogAction onClick={config.onConfirm}>
+            {config.confirmButtonText}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
 const useAlert = () => {
-  const context = useContext(AlertContext);
-  if (!context) {
-    throw new Error("useAlert must be used within an AlertProvider");
-  }
-  return context;
+  const actions = useAlertActions();
+
+  return {
+    alert: (config: AlertConfig) => actions.alert(config),
+    confirm: (config: ConfirmConfig) => actions.confirm(config),
+    hideAlert: () => actions.hideAlert(),
+  };
 };
 
-export { AlertProvider, useAlert };
+export { AlertRoot, useAlert };

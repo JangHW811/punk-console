@@ -1,9 +1,10 @@
-import type { Metadata } from 'next';
-import './globals.css';
+import type { Metadata } from "next";
+import { AlertRoot } from "@/components/common/providers/AlertProvider";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'Innocean Data Analysis - Renewal',
-  description: 'AI와 대화하며 데이터를 분석하고 인사이트를 발견하세요',
+  title: "Innocean Data Analysis - Renewal",
+  description: "AI와 대화하며 데이터를 분석하고 인사이트를 발견하세요",
 };
 
 export default function RootLayout({
@@ -21,8 +22,12 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
         />
       </head>
-      <body className="antialiased" style={{ fontFamily: "'Pretendard', sans-serif" }}>
+      <body
+        className="antialiased"
+        style={{ fontFamily: "'Pretendard', sans-serif" }}
+      >
         {children}
+        <AlertRoot />
       </body>
     </html>
   );
