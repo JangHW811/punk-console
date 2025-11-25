@@ -21,7 +21,7 @@ const SessionList = () => {
       <h3 className="py-2 text-xl font-bold text-gray-400 uppercase tracking-wider text-left">
         세션 목록
       </h3>
-      <div className="space-y-1">
+      <div className="space-y-1 max-h-60 overflow-y-auto">
         {sessionInfoList.map((session: SessionInfo) => {
           return <SessionItem key={session.id} session={session} />;
         })}

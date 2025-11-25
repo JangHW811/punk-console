@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { http } from "./common";
 
-interface FileUploadResponse {
+export interface FileUploadResponse {
   file_id: string;
   filename: string;
   size: number;

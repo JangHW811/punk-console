@@ -24,7 +24,7 @@ export default function Sidebar() {
       <section
         className={cn(
           "overflow-y-auto transition-height duration-300",
-          isFileVisible ? "max-h-60 h-auto" : "max-h-0"
+          isFileVisible ? "max-h-80 h-auto min-h-50" : "max-h-0"
         )}
       >
         <DataUpload />

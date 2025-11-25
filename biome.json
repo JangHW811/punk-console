@@ -22,7 +22,8 @@
         "noUnknownAtRules": "off"
       },
       "a11y": {
-        "useSemanticElements": "off"
+        "useSemanticElements": "off",
+        "noNoninteractiveElementToInteractiveRole": "off"
       }
     },
     "domains": {
