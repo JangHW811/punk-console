@@ -57,6 +57,7 @@ const CreateSessionModal = () => {
       reset();
     }
   }, [open, reset]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

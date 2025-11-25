@@ -6,7 +6,7 @@ export default function Layout() {
   return (
     <main className="bg-gray-50 text-gray-800 h-screen flex flex-col overflow-hidden">
       <Header />
-      <aside>
+      <aside className="flex flex-1">
         <Sidebar />
         <MainContent />
       </aside>

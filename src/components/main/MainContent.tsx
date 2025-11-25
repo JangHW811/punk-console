@@ -14,8 +14,6 @@ export default function MainContent() {
             </h2>
             <p className="text-lg text-gray-500">
               AI와 대화하며 데이터를 분석하고 인사이트를 발견하세요.
-              <br />
-              로그인하여 나만의 분석 세션을 시작할 수 있습니다.
             </p>
           </div>
 

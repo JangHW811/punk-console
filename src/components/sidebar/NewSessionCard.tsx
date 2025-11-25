@@ -16,7 +16,7 @@ export default function NewSessionCard() {
     </div>
   );
   return (
-    <div className="bg-slate-900 p-5 text-white shadow-lg relative overflow-hidden group">
+    <div className="p-5 text-white shadow-lg relative overflow-hidden group">
       <div className="relative z-10 flex flex-col items-center text-center space-y-3">
         <div className="w-full">
           {isEmpty ? emptyContent : <SessionList />}

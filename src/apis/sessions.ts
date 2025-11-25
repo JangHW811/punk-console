@@ -1,15 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  type SessionInfo,
-  useTempSessionStore,
-} from "@/stores/tempSessionStore";
+import { type SessionInfo, useSessionStore } from "@/stores/sessionStore";
 
 export const useUpsertSessionInfo = () => {
   const queryClient = useQueryClient();
-  const { addTempSessionInfo } = useTempSessionStore();
+  const { addSessionInfo } = useSessionStore();
   return useMutation({
     mutationFn: (sessionInfo?: SessionInfo) => {
-      return Promise.resolve(addTempSessionInfo(sessionInfo));
+      return Promise.resolve(addSessionInfo(sessionInfo));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["useSessionInfoList"] });
@@ -18,11 +15,11 @@ export const useUpsertSessionInfo = () => {
 };
 
 export const useSessionInfoList = () => {
-  const { tempSessionInfoList } = useTempSessionStore();
+  const { sessionInfoList } = useSessionStore();
   return useQuery({
     queryKey: ["useSessionInfoList"],
     queryFn: () => {
-      return tempSessionInfoList;
+      return sessionInfoList;
     },
   });
 };
