@@ -1,12 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
-import {
-  type AlertConfig,
-  type ConfirmConfig,
-  useAlertActions,
-  useAlertStore,
-} from "@/stores/alertStore";
+import { useAlertActions, useAlertStore } from "@/stores/alertStore";
+import { useCallback, useRef } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +17,7 @@ const AlertRoot = () => {
   const isOpen = useAlertStore((state) => state.isOpen);
   const hide = useAlertStore((state) => state.hide);
   const clear = useAlertStore((state) => state.clear);
+  const actionButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -42,6 +38,14 @@ const AlertRoot = () => {
     [clear]
   );
 
+  const handleOpenAutoFocus = useCallback((event: Event) => {
+    event.preventDefault();
+    // 기본 포커스 동작을 막고 action 버튼에 포커스
+    setTimeout(() => {
+      actionButtonRef.current?.focus();
+    }, 0);
+  }, []);
+
   if (!config) {
     return null;
   }
@@ -51,6 +55,7 @@ const AlertRoot = () => {
       <AlertDialogContent
         onAnimationEnd={handleExitAnimation}
         onTransitionEnd={handleExitAnimation}
+        onOpenAutoFocus={handleOpenAutoFocus}
       >
         <AlertDialogTitle>{config.title}</AlertDialogTitle>
         <AlertDialogDescription>{config.description}</AlertDialogDescription>
@@ -60,7 +65,7 @@ const AlertRoot = () => {
               {config.cancelButtonText}
             </AlertDialogCancel>
           ) : null}
-          <AlertDialogAction onClick={config.onConfirm}>
+          <AlertDialogAction ref={actionButtonRef} onClick={config.onConfirm}>
             {config.confirmButtonText}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -69,14 +74,4 @@ const AlertRoot = () => {
   );
 };
 
-const useAlert = () => {
-  const actions = useAlertActions();
-
-  return {
-    alert: (config: AlertConfig) => actions.alert(config),
-    confirm: (config: ConfirmConfig) => actions.confirm(config),
-    hideAlert: () => actions.hideAlert(),
-  };
-};
-
-export { AlertRoot, useAlert };
+export { AlertRoot, useAlertActions };

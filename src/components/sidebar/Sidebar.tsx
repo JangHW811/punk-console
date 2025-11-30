@@ -1,20 +1,20 @@
 "use client";
 
-import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useSessionStore } from "@/stores/sessionStore";
+import { useMemo } from "react";
 import AvailableAnalysis from "./AvailableAnalysis";
 import DataUpload from "./DataUpload";
 import NewSessionCard from "./NewSessionCard";
 
 export default function Sidebar() {
-  const { fileId, selectedSessionId } = useSessionStore();
+  const { selectedFileIdList, selectedSessionId } = useSessionStore();
   const { isFileVisible, isTaskVisible } = useMemo(() => {
     return {
       isFileVisible: selectedSessionId,
-      isTaskVisible: selectedSessionId && fileId,
+      isTaskVisible: selectedSessionId && selectedFileIdList.length > 0,
     };
-  }, [fileId, selectedSessionId]);
+  }, [selectedFileIdList, selectedSessionId]);
 
   return (
     <aside className="w-82 bg-white border-r border-gray-200 flex flex-col h-full shadow-sm z-10">

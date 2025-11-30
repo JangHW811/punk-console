@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type SessionInfo, useSessionStore } from "@/stores/sessionStore";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useUpsertSessionInfo = () => {
   const queryClient = useQueryClient();
@@ -20,6 +20,16 @@ export const useSessionInfoList = () => {
     queryKey: ["useSessionInfoList"],
     queryFn: () => {
       return sessionInfoList;
+    },
+  });
+};
+
+export const useSessionInfo = (id: string) => {
+  const { sessionInfoList } = useSessionStore();
+  return useQuery({
+    queryKey: ["useSessionInfo", id],
+    queryFn: () => {
+      return sessionInfoList.find((session) => session.id === id);
     },
   });
 };

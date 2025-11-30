@@ -10,15 +10,17 @@ export interface SessionInfo {
 }
 interface SessionStoreState {
   selectedSessionId: string | null;
+  selectedFileIdList: string[];
   setSelectedSessionId: (id: string | null) => void;
+  setSelectedFileIdList: (idList: string[]) => void;
+  addSelectedFileId: (id: string) => void;
+  removeSelectedFileId: (id: string) => void;
+  clearSelectedFileIdList: () => void;
   sessionInfoList: SessionInfo[];
   addSessionInfo: (sessionInfo?: SessionInfo) => void;
   taskType?: string;
-  fileId?: string;
   setTaskType: (taskType: string) => void;
-  setFileId: (fileId: string) => void;
   clearTaskType: () => void;
-  clearFileId: () => void;
 }
 
 export const useSessionStore = create<SessionStoreState>((set) => ({
@@ -38,7 +40,14 @@ export const useSessionStore = create<SessionStoreState>((set) => ({
       };
     }),
   setTaskType: (taskType) => set({ taskType }),
-  setFileId: (fileId) => set({ fileId }),
   clearTaskType: () => set({ taskType: undefined }),
-  clearFileId: () => set({ fileId: undefined }),
+  selectedFileIdList: [],
+  setSelectedFileIdList: (idList) => set({ selectedFileIdList: idList }),
+  addSelectedFileId: (id) =>
+    set((state) => ({ selectedFileIdList: [...state.selectedFileIdList, id] })),
+  removeSelectedFileId: (id) =>
+    set((state) => ({
+      selectedFileIdList: state.selectedFileIdList.filter((id) => id !== id),
+    })),
+  clearSelectedFileIdList: () => set({ selectedFileIdList: [] }),
 }));

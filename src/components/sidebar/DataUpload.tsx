@@ -1,29 +1,24 @@
 "use client";
-import { UploadCloud } from "lucide-react";
-import { useRef, useState } from "react";
 import useFileUpload from "@/apis/file";
 import { useSessionStore } from "@/stores/sessionStore";
-
-interface UploadedFile {
-  fileId: string;
-  name: string;
-  size: number;
-}
+import { UploadCloud } from "lucide-react";
+import { useRef, useState } from "react";
+import { useAlertActions } from "../common/providers/AlertProvider";
+import UploadedFileItem, { UploadedFile } from "./UploadedFileItem";
 
 const DataUpload = () => {
   const { mutateAsync } = useFileUpload();
-  const { setFileId } = useSessionStore();
+  const {} = useAlertActions();
+  const { addSelectedFileId, removeSelectedFileId, selectedFileIdList } =
+    useSessionStore();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<UploadedFile[]>([]);
-  const [selectedFileIndex, setSelectedFileIndex] = useState<number | null>(
-    null
-  );
   const [isDragging, setIsDragging] = useState(false);
 
   const handleFiles = async (incomingFiles: File[]) => {
     if (!incomingFiles.length) return;
-    let hasSelection = selectedFileIndex !== null;
+    let hasSelection = selectedFileIdList.length > 0;
     for (const file of incomingFiles) {
       try {
         const result = await mutateAsync(file);
@@ -35,8 +30,7 @@ const DataUpload = () => {
         setFiles((prev) => [...prev, uploaded]);
         if (!hasSelection) {
           hasSelection = true;
-          setSelectedFileIndex(0);
-          setFileId(uploaded.fileId);
+          addSelectedFileId(result.file_id);
         }
       } catch (error) {
         console.error("파일 업로드 실패", error);
@@ -75,11 +69,17 @@ const DataUpload = () => {
     await handleFiles(Array.from(e.dataTransfer.files));
   };
 
-  const handleSelectFile = (index: number) => {
-    const file = files[index];
-    if (!file) return;
-    setSelectedFileIndex(index);
-    setFileId(file.fileId);
+  const handleSelectFile = (fileId: string) => {
+    const idExistFile = files.find((file) => file.fileId === fileId);
+    if (!idExistFile) return;
+    if (selectedFileIdList.includes(fileId)) {
+      if (selectedFileIdList.length === 1) {
+        return;
+      }
+      removeSelectedFileId(fileId);
+    } else {
+      addSelectedFileId(fileId);
+    }
   };
 
   return (
@@ -131,22 +131,12 @@ const DataUpload = () => {
         ) : (
           <ul className="mt-3 space-y-2">
             {files.map((file, index) => (
-              <li key={`${file.name}-${index}`}>
-                <button
-                  type="button"
-                  onClick={() => handleSelectFile(index)}
-                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm transition ${
-                    selectedFileIndex === index
-                      ? "border-indigo-400 bg-indigo-50 text-indigo-700"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-                  }`}
-                >
-                  <span className="truncate">{file.name}</span>
-                  <span className="text-xs">
-                    {(file.size / 1024).toFixed(1)} KB
-                  </span>
-                </button>
-              </li>
+              <UploadedFileItem
+                key={`${file.name}-${index}`}
+                file={file}
+                selectedFileId={selectedFileIdList}
+                handleSelectFile={handleSelectFile}
+              />
             ))}
           </ul>
         )}
