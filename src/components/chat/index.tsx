@@ -6,8 +6,8 @@ import ChatGuide from "./ChatGuide";
 import ChatInput from "./ChatInput";
 
 interface ChatProps {
-  jobId: string;
-  sessionId: string;
+  jobId?: string;
+  sessionId?: string;
 }
 
 const Chat = ({ jobId, sessionId }: ChatProps) => {
