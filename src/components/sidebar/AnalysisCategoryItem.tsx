@@ -1,8 +1,8 @@
-import { ChevronRight } from "lucide-react";
-import { useState } from "react";
 import type { Analysis, AnalysisCategory } from "@/data/analysisCategories";
 import { cn } from "@/lib/utils";
 import { useSessionStore } from "@/stores/sessionStore";
+import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface AnalysisCategoryItemProps {
   category: AnalysisCategory;
@@ -64,11 +64,17 @@ export default function AnalysisCategoryItem({
 }
 
 const AnalysisItem = ({ analysis }: { analysis: Analysis }) => {
-  const { setTaskType } = useSessionStore();
+  const { setTaskType, taskType } = useSessionStore();
+  const isSelected = taskType === analysis.id;
   const AnalysisIcon = analysis.icon;
   const handleClick = () => {
     setTaskType(analysis.id);
   };
+
+  const containerClassName = cn(
+    "cursor-pointer flex items-start gap-2 rounded-lg px-3 py-1.5 hover:bg-gray-50 hover:text-gray-800 transition-colors",
+    isSelected && "bg-slate-200 text-gray-800 hover:bg-slate-300"
+  );
   return (
     <li
       role="button"
@@ -83,7 +89,7 @@ const AnalysisItem = ({ analysis }: { analysis: Analysis }) => {
           console.log(analysis.id);
         }
       }}
-      className="cursor-pointer flex items-start gap-2 rounded-lg px-3 py-1.5 hover:bg-gray-50 hover:text-gray-800 transition-colors"
+      className={containerClassName}
     >
       <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-500">
         <AnalysisIcon className="h-3.5 w-3.5" />
