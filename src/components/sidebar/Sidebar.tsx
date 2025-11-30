@@ -11,10 +11,8 @@ export default function Sidebar() {
   const { selectedFileIdList, selectedSessionId } = useSessionStore();
   const { isFileVisible, isTaskVisible } = useMemo(() => {
     return {
-      isFileVisible: selectedSessionId || process.env.NODE_ENV === "production",
-      isTaskVisible:
-        (selectedSessionId && selectedFileIdList.length > 0) ||
-        process.env.NODE_ENV === "production",
+      isFileVisible: selectedSessionId,
+      isTaskVisible: selectedSessionId && selectedFileIdList.length > 0,
     };
   }, [selectedFileIdList, selectedSessionId]);
 
